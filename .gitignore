@@ -1,0 +1,8 @@
+
+bin/
+obj/
+*.user
+*.db
+*.sqlite
+*.log
+appsettings.Development.json

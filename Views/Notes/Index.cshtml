@@ -1,0 +1,61 @@
+@model List<NotesApp.Models.Note>
+@{
+    ViewData["Title"] = "Notes";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Create a Note</h2>
+        <form asp-controller="Notes" asp-action="Create" method="post" class="row g-2">
+            <div class="col-md-4">
+                <input name="Title" class="form-control" placeholder="Title" required maxlength="200" />
+            </div>
+            <div class="col-md-3">
+                <select name="Priority" class="form-select">
+                    <option value="0">Low</option>
+                    <option value="1">Medium</option>
+                    <option value="2">High</option>
+                </select>
+            </div>
+            <div class="col-md-5 d-flex">
+                <button class="btn btn-primary ms-auto" type="submit">Create</button>
+            </div>
+            <div class="col-12 mt-2">
+                <textarea name="Content" class="form-control" rows="3" placeholder="Write your note..." required></textarea>
+            </div>
+            @Html.AntiForgeryToken()
+        </form>
+    </div>
+</div>
+
+<h3>All Notes (newest first)</h3>
+<div class="row">
+    @foreach (var note in Model)
+    {
+        var pclass = note.Priority == Priority.Low ? "low" : note.Priority == Priority.Medium ? "medium" : "high";
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <h5 class="me-2 note-editable" data-id="@note.Id" data-field="Title" contenteditable="true">@note.Title</h5>
+                        <span class="badge @pclass align-self-start">@note.Priority</span>
+                        <div class="ms-auto text-muted small">@note.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</div>
+                    </div>
+
+                    <p class="card-text mt-2 note-editable" data-id="@note.Id" data-field="Content" contenteditable="true">@note.Content</p>
+
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="document.querySelector('[data-id=\" @note.Id\"][data-field =\"Title\"]').focus();">Edit</button>
+
+                        <form asp-controller="Notes" asp-action="Delete" method="post" onsubmit="return confirm('Delete this note?');">
+                            <input type="hidden" name="id" value="@note.Id" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
